@@ -1,0 +1,159 @@
+$("#guardar_usuario").click(function(event) {
+	/* Act on the event */
+	event.preventDefault();
+
+	$.ajax({
+			url: "class/insertar_usuario_ajax.php",
+			type: "POST",
+			dataType: "html",
+			data: {usuario: $("#usuario").val(), contraseña: $("#contraseña").val(), usuarios_tipos_id: $("#usuarios_tipos_id").val()},
+
+			success: function(data,status){
+				if (status = "OK" && data == true){
+				$("#mensaje_usuario").html('<div class="alert alert-success" role="alert">Se Agregó con Éxito!</div>');
+				document.getElementById("form_usuario").reset();
+				}
+
+				else
+				{
+				$("#mensaje_usuario").html('<div class="alert alert-danger" role="alert">Se Produjo un ERROR! Verifique los datos Ingresados</div>');
+				document.getElementById("form_usuario").reset();
+
+				}
+			}
+		})
+	
+});
+
+$("#table-pagination").on('check.bs.table', function (e, row) {
+
+	if (row.situacion =="SUS"){
+
+		$("#eliminar_usuario").removeAttr('disabled');
+		$("#habilitar_usuario").removeAttr('disabled');
+		$("#suspender_usuario").attr('disabled',true);
+
+	}
+
+	else{
+		$("#habilitar_usuario").attr('disabled',true);
+		$("#eliminar_usuario").removeAttr('disabled');
+		$("#suspender_usuario").removeAttr('disabled');
+}
+
+	//$("#eliminar_usuario").remove();
+     
+	//$('<button style="margin-left: 5px" id="eliminar_usuario" type="button" class="btn btn-danger">Eliminar Usuario</button>').insertAfter("#agregar_usuario");
+
+     });
+$("#table-pagination").on('uncheck.bs.table', function (e, row) {
+     	e.preventDefault();
+
+	$("#eliminar_usuario").attr('disabled',true);
+	$("#suspender_usuario").attr('disabled',true);
+	$("#habilitar_usuario").attr('disabled',true);
+
+
+
+     });
+
+$("#eliminar_usuario").click(function(event) {
+	event.preventDefault();
+	var resultado = JSON.stringify($("#table-pagination").bootstrapTable('getSelections'));
+
+	if(confirm("¿Desea Eliminar el Usuario indicado?")){
+
+		$.ajax({
+			url: 'class/eliminar_usuario_ajax.php',
+			type: 'POST',
+			dataType: 'html',
+			data: {resultado: resultado},
+			success: function(data,status){
+
+				if(status =='OK' || data == "SI"){
+
+					$('<div class="row"> <div class="col-xs-8 col-xs-offset-2 alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>Se Eliminó Con Éxito el Usuario</div> </div>').insertBefore('#usuarios_botonera');
+					//$("#table-pagination").bootstrapTable('refresh');
+				}
+				else
+					$('<div class="row"> <div class="col-xs-8 col-xs-offset-2 alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>No se puede eliminar el Usuario,tiene datos registrados a su nombre</div> </div>').insertBefore('#usuarios_botonera');
+			}
+
+			});
+
+	}
+	
+	
+});
+
+$("#suspender_usuario").click(function(event) {
+	event.preventDefault();
+	var resultado = JSON.stringify($("#table-pagination").bootstrapTable('getSelections'));
+	/*var resultado = $("#table-pagination").bootstrapTable('getSelections');---Comentado para futuros usos, $.each del json
+
+	$.each(resultado, function(index, val) {
+		 /* iterate through array or object 
+		 alert(val.id);
+	});*/
+
+	if(confirm("¿Desea Suspender el Usuario indicado?")){
+		
+		$.ajax({
+			url: 'class/suspender_usuario_ajax.php',
+			type: 'POST',
+			dataType: 'html',
+			data: {resultado: resultado},
+			success: function(data,status){
+
+				if(status =='OK' || data == "SI"){
+
+
+
+					$('<div class="row"> <div class="col-xs-8 col-xs-offset-2 alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>Se Suspendió Con Éxito el Usuario</div> </div>').insertBefore('#usuarios_botonera');
+					//$("#table-pagination").bootstrapTable('refresh');
+				}
+				else
+					$('<div class="row"> <div class="col-xs-8 col-xs-offset-2 alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>No se puede suspender el Usuario,verifique los datos</div> </div>').insertBefore('#usuarios_botonera');
+			}
+
+			});
+
+	}
+	
+});
+
+$("#habilitar_usuario").click(function(event) {
+	event.preventDefault();
+	var resultado = JSON.stringify($("#table-pagination").bootstrapTable('getSelections'));
+	/*var resultado = $("#table-pagination").bootstrapTable('getSelections');---Comentado para futuros usos, $.each del json
+
+	$.each(resultado, function(index, val) {
+		 /* iterate through array or object 
+		 alert(val.id);
+	});*/
+
+	if(confirm("¿Desea Habilitar el Usuario indicado?")){
+		
+		$.ajax({
+			url: 'class/habilitar_usuario_ajax.php',
+			type: 'POST',
+			dataType: 'html',
+			data: {resultado: resultado},
+			success: function(data,status){
+
+				if(status =='OK' || data == "SI"){
+
+
+
+					$('<div class="row"> <div class="col-xs-8 col-xs-offset-2 alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>Se habilitó Con Éxito el Usuario</div> </div>').insertBefore('#usuarios_botonera');
+					//$("#table-pagination").bootstrapTable('refresh');
+				}
+				else
+					$('<div class="row"> <div class="col-xs-8 col-xs-offset-2 alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>No se puede habilitar el Usuario,verifique los datos</div> </div>').insertBefore('#usuarios_botonera');
+			}
+
+			});
+
+	}
+	
+});
